@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+    volumes:
+      - ./app/api:/app/api
+    ports:
+      - 5000:80
+    command: uvicorn api.app:app --host 0.0.0.0 --port 80 --reload
+    env_file:
+      - .env
+
+  mongo:
+    container_name: ugc_mongo
+    image: mongo
+    command: mongod --dbpath /data/db --port 27018
+    ports:
+      - "27018:27018"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./docker/mongo_data:/docker-entrypoint-initdb.d
+
+  postgres:
+    container_name: ugc_postgres
+    image: postgres:13
+    ports: 
+      - "5555:5432"
+    env_file:
+      - .env
+
+    volumes:
+      - ./docker/pg_data:/docker-entrypoint-initdb.d
