@@ -29,7 +29,7 @@ class PgService:
         review = await self._fetch_async(sql, review_id)
         review_obj = Review(**review)
         likes = await self.get_review_likes(review_id)
-        review_obj.likes = likes['count']
+        review_obj.likes = likes["count"]
         return review_obj
 
     async def get_review_likes(self, review_id: int) -> int:
