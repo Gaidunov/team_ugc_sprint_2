@@ -88,23 +88,23 @@ jobs:
     - name: Test with pytest
       run: pytest . --verbose
 
-  telegram_notifier:
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    needs: [ linter, tests, mypy ]
-
-    steps:
-    - name: send telegram message on push
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-          ${{ github.actor }} created commit:
-          Commit message: ${{ github.event.commits[0].message }}
-            
-          Repository: ${{ github.repository }}
-          
-          CI succeded: ${{ !contains(join(needs.*.result, ','), 'failure') }}
-            
-          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+#  telegram_notifier:
+#    runs-on: ubuntu-latest
+#    if: ${{ always() }}
+#    needs: [ linter, tests, mypy ]
+#
+#    steps:
+#    - name: send telegram message on push
+#      uses: appleboy/telegram-action@master
+#      with:
+#        to: ${{ secrets.TELEGRAM_TO }}
+#        token: ${{ secrets.TELEGRAM_TOKEN }}
+#        message: |
+#          ${{ github.actor }} created commit:
+#          Commit message: ${{ github.event.commits[0].message }}
+#
+#          Repository: ${{ github.repository }}
+#
+#          CI succeded: ${{ !contains(join(needs.*.result, ','), 'failure') }}
+#
+#          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
