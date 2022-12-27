@@ -1,5 +1,6 @@
-from locust import HttpUser, task, between, constant, tag
 from random import randint
+
+from locust import HttpUser, task, between, tag
 
 
 class MoviewApiTest(HttpUser):

@@ -7,6 +7,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class MongoService:
+    def __init__(self):
+        self.reviews = None
+        self.likes = None
+        self.db = None
+        self.client = None
+
     async def connect_to_database(self):
         self.client = AsyncIOMotorClient(
             settings.mongo_conn_str, maxPoolSize=100, minPoolSize=10
