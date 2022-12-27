@@ -7,12 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  linter:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
@@ -26,5 +26,85 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with flake8
+      run: flake8 . --select E,F --count --show-source --statistics --tee --format=html --htmldir output
+
+    - name: Zip linter result
+      uses: vimtor/action-zip@v1
+      with:
+        files: output/
+        dest: linter_output.zip
+
+    - name: Upload linter results to file
+      uses: actions/upload-artifact@v3
+      with:
+        name: linter
+        path: linter_output.zip
+
+  mypy:
+    runs-on: ubuntu-latest
+    needs: [ linter ]
+
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install mypy
+        run: pip install mypy
+
+      - name: Run mypy
+        uses: sasanquaneuf/mypy-github-action@releases/v1
+        with:
+          checkName: 'mypy'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  tests:
+    strategy:
+      matrix:
+        python-version: [ '3.7', '3.8', '3.9' ]
+    runs-on: ubuntu-latest
+    needs: [ linter, mypy ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
       run: |
-        flake8 . --count --show-source --statistics
+        python -m pip install --upgrade pip
+        pip install flake8
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Test with pytest
+      run: pytest . --verbose
+
+#  telegram_notifier:
+#    runs-on: ubuntu-latest
+#    if: ${{ always() }}
+#    needs: [ linter, tests, mypy ]
+#
+#    steps:
+#    - name: send telegram message on push
+#      uses: appleboy/telegram-action@master
+#      with:
+#        to: ${{ secrets.TELEGRAM_TO }}
+#        token: ${{ secrets.TELEGRAM_TOKEN }}
+#        message: |
+#          ${{ github.actor }} created commit:
+#          Commit message: ${{ github.event.commits[0].message }}
+#
+#          Repository: ${{ github.repository }}
+#
+#          CI succeded: ${{ !contains(join(needs.*.result, ','), 'failure') }}
+#
+#          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}

@@ -36,3 +36,6 @@ urllib3==1.26.13
 werkzeug==2.2.2
 zope-event==4.6
 zope-interface==5.5.2
+wemake-python-styleguide==0.17.0
+flake8-html==0.4.3
+pytest==7.2.0
