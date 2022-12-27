@@ -29,12 +29,14 @@ jobs:
       run: flake8 . --select E,F --count --show-source --statistics --tee --format=html --htmldir output
 
     - name: Zip linter result
+      if: always()
       uses: vimtor/action-zip@v1
       with:
         files: output/
         dest: linter_output.zip
 
     - name: Upload linter results to file
+      if: always()
       uses: actions/upload-artifact@v3
       with:
         name: linter
