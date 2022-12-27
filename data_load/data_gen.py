@@ -1,8 +1,9 @@
 import json
-from faker import Faker
+import uuid
 from datetime import datetime, timedelta
 from random import randint, choice
-import uuid
+
+from faker import Faker
 
 fake = Faker("ru_RU")
 

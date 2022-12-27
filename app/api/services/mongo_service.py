@@ -1,10 +1,9 @@
 import uuid
 from datetime import datetime
 
-from motor.motor_asyncio import AsyncIOMotorClient
-
 from api.models import Review
 from api.settings import settings
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class MongoService:

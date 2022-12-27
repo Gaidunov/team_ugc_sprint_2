@@ -1,10 +1,10 @@
 import uuid
 from datetime import datetime
-import psycopg
-from psycopg.rows import dict_row
 
+import psycopg
 from api.models import Review
 from api.settings import settings
+from psycopg.rows import dict_row
 
 
 class PgService:

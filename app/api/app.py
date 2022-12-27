@@ -1,11 +1,6 @@
-import sys
-from pathlib import Path
-
-
-from fastapi import FastAPI, Depends
-
-from api.services import get_mongo_service, get_pg_service
 from api.models import Review
+from api.services import get_mongo_service, get_pg_service
+from fastapi import FastAPI, Depends
 
 app = FastAPI(docs_url="/docs")
 
