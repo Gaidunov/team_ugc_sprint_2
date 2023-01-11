@@ -22,7 +22,9 @@ class MongoService:
         self.reviews = self.db.reviews
 
     async def get_review_likes(self, review_id: int = 100) -> int:
-        like_count = await self.db.likes.count_documents({"review_id": review_id})
+        like_count = await self.db.likes.count_documents(
+            {"review_id": review_id}
+        )
         return like_count
 
     async def get_review(self, review_id: int = 123) -> Review:

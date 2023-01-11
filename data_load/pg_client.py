@@ -23,7 +23,8 @@ def pg_upload_review_data(data: list):
     """
 
     meta_sql = """
-            INSERT INTO meta (author_id, author_name, date, review_id) 
+            INSERT INTO meta (author_id, author_name,
+            date, review_id) 
             VALUES (%s, %s, %s, %s);
     """
 
@@ -36,7 +37,12 @@ def pg_upload_review_data(data: list):
         for rev in data
     )
     meta_data = tuple(
-        ((rev["author_id"],), rev["author_name"], rev["date"], rev["review_id"])
+        (
+            (rev["author_id"],),
+            rev["author_name"],
+            rev["date"],
+            rev["review_id"]
+        )
         for rev in data
     )
     try:
@@ -48,7 +54,8 @@ def pg_upload_review_data(data: list):
 
 
 def pg_select_review(review_id) -> dict:
-    sql = """SELECT * FROM reviews r JOIN meta m on r.id = m.review_id where m.review_id = %s"""
+    sql = """SELECT * FROM reviews r JOIN meta m 
+    on r.id = m.review_id where m.review_id = %s"""
     cur.execute(sql, (review_id,))
     review = cur.fetchone()
     review = Review(**review)
@@ -56,8 +63,12 @@ def pg_select_review(review_id) -> dict:
 
 
 def upload_review_likes(data: list) -> None:
-    sql = """INSERT INTO reviews_likes (user_id, review_id, date) VALUES (%s, %s, %s)"""
-    like_data = ((str(e["user_id"]), e["review_id"], e["date"]) for e in data)
+    sql = """INSERT INTO reviews_likes 
+    (user_id, review_id, date) VALUES (%s, %s, %s)"""
+    like_data = (
+        (str(e["user_id"]), e["review_id"], e["date"])
+        for e in data
+    )
     try:
         extras.execute_batch(cur, sql, like_data, page_size=10)
     except psycopg2.errors.UniqueViolation:
@@ -66,7 +77,8 @@ def upload_review_likes(data: list) -> None:
 
 
 def get_review_likes(review_id) -> int:
-    sql = """SELECT COUNT(*) FROM reviews_likes WHERE review_id = %s"""
+    sql = """SELECT COUNT(*) FROM reviews_likes 
+    WHERE review_id = %s"""
     cur.execute(sql, (review_id,))
     likes = cur.fetchone()
     return likes
