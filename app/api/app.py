@@ -1,5 +1,6 @@
 from api.models import Review
 from api.services import get_mongo_service, get_pg_service
+from api.auth import token_verification
 from fastapi import FastAPI, Depends
 
 app = FastAPI(docs_url="/docs")
@@ -10,6 +11,7 @@ app = FastAPI(docs_url="/docs")
     response_model=Review,
     description="Get review from MongoDb by id.",
 )
+@token_verification
 async def get_review_from_mongo(review_id: int, db=Depends(get_mongo_service)):
     """Get review by id from mongo."""
     review = await db.get_review(review_id)
@@ -21,6 +23,7 @@ async def get_review_from_mongo(review_id: int, db=Depends(get_mongo_service)):
     response_model=Review,
     description="Get review from Postgres by id.",
 )
+@token_verification
 async def get_review_from_postgres(review_id: int, db=Depends(get_pg_service)):
     """Get review by id from postgres."""
     review = await db.get_review(review_id)
@@ -31,6 +34,7 @@ async def get_review_from_postgres(review_id: int, db=Depends(get_pg_service)):
     "/reviews/postgres/like/{review_id}",
     description="Leave a like for a review from Postgres.",
 )
+@token_verification
 async def like_pg(review_id: int, user_id: str, db=Depends(get_pg_service)):
     await db.like_review(review_id, user_id)
     return "liked"
@@ -40,6 +44,7 @@ async def like_pg(review_id: int, user_id: str, db=Depends(get_pg_service)):
     "/reviews/mongo/like/{review_id}",
     description="Leave a like for a review from MongoDb.",
 )
+@token_verification
 async def like_mongo(review_id: int, user_id: str, db=Depends(get_mongo_service)):
     await db.like_review(review_id, user_id)
     return "liked"
@@ -49,6 +54,7 @@ async def like_mongo(review_id: int, user_id: str, db=Depends(get_mongo_service)
     "/reviews/mongo/dislike/{review_id}",
     description="Remove like for a review from MongoDb.",
 )
+@token_verification
 async def dislike_mongo(review_id: int, user_id: str, db=Depends(get_mongo_service)):
     await db.dislike_review(review_id, user_id)
     return "disliked"
@@ -58,6 +64,7 @@ async def dislike_mongo(review_id: int, user_id: str, db=Depends(get_mongo_servi
     "/reviews/postgres/dislike/{review_id}",
     description="Remove like for a review from Postgres.",
 )
+@token_verification
 async def dislike_pg(review_id: int, user_id: str, db=Depends(get_pg_service)):
     await db.dislike_review(review_id, user_id)
     return "disliked"
