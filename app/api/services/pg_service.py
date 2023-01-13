@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 
 import psycopg
@@ -12,18 +11,14 @@ class PgService:
     now = datetime.now()
 
     async def _fetch_async(self, sql, *args) -> dict:
-        async with await psycopg.AsyncConnection.connect(
-                settings.pg_conn_str
-        ) as aconn:
+        async with await psycopg.AsyncConnection.connect(settings.pg_conn_str) as aconn:
             async with aconn.cursor(row_factory=dict_row) as acur:
                 await acur.execute(sql, (*args,))
                 result = await acur.fetchone()
                 return result
 
     async def _insert_async(self, sql, *args) -> None:
-        async with await psycopg.AsyncConnection.connect(
-            settings.pg_conn_str
-        ) as aconn:
+        async with await psycopg.AsyncConnection.connect(settings.pg_conn_str) as aconn:
             async with aconn.cursor(row_factory=dict_row) as acur:
                 await acur.execute(sql, (*args,))
                 await aconn.commit()
@@ -43,9 +38,12 @@ class PgService:
         likes = await self._fetch_async(sql, review_id)
         return likes
 
-    async def like_review(self, review_id: int):
+    async def like_review(self, review_id: int, user_id: str):
         sql = """INSERT INTO reviews_likes 
         (user_id, review_id, date) VALUES (%s, %s, %s)"""
-        user_id = str(uuid.uuid4())
         date = self.now
         await self._insert_async(sql, user_id, review_id, date)
+
+    async def dislike_review(self, review_id: int, user_id: str):
+        sql = """DELETE FROM reviews_likes where user_id = %s and review_id = %s;"""
+        await self._insert_async(sql, user_id, review_id)

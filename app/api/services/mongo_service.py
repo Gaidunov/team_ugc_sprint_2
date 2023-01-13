@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 
 from api.models import Review
@@ -22,9 +21,7 @@ class MongoService:
         self.reviews = self.db.reviews
 
     async def get_review_likes(self, review_id: int = 100) -> int:
-        like_count = await self.db.likes.count_documents(
-            {"review_id": review_id}
-        )
+        like_count = await self.db.likes.count_documents({"review_id": review_id})
         return like_count
 
     async def get_review(self, review_id: int = 123) -> Review:
@@ -34,9 +31,11 @@ class MongoService:
         self.client.close()
         return review_obj
 
-    async def like_review(self, review_id: int):
-        user_id = str(uuid.uuid4())
+    async def like_review(self, review_id: int, user_id: str):
         now = datetime.now()
         await self.likes.insert_one(
             {"review_id": review_id, "user_id": user_id, "date": now}
         )
+
+    async def dislike_review(self, review_id: int, user_id: str):
+        await self.likes.delete_one({"user_id": user_id, "review_id": review_id})

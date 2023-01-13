@@ -10,4 +10,5 @@ COPY ./docker/requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY ./app/api /app/api
+COPY .env /app/.env
 

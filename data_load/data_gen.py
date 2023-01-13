@@ -9,10 +9,7 @@ fake = Faker("ru_RU")
 
 
 def get_movies_id() -> list:
-    with open(
-        "data_load/movies_with_time.json", "r",
-        encoding="utf-8"
-    ) as f:
+    with open("data_load/movies_with_time.json", "r", encoding="utf-8") as f:
         data = json.load(f)
         return [mv[0] for mv in data]
 
@@ -52,11 +49,7 @@ def make_one_review():
 def make_one_user_like():
     user = str(uuid.uuid4())
     date = datetime.now() - timedelta(days=randint(1, 3000))
-    like = {
-        "user_id": user,
-        "review_id": randint(1, NUMBER_OF_REVIEWS),
-        "date": date
-    }
+    like = {"user_id": user, "review_id": randint(1, NUMBER_OF_REVIEWS), "date": date}
     return like
 
 
